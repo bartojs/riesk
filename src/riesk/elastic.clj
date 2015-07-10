@@ -46,7 +46,7 @@
   (fn [events]
     (doseq [event events]
       (let [etime (* (:time event) 1000)
-            evt (if normalize? (-> event settimestamp normalize) (-> event settimestamp))
+            evt (if normalize? (-> event settimestamp normalize setid) (-> event settimestamp setid))
             idxname (format "%s-%s" index-name (.format (get dateformats series) etime))]
         (try (doc/create connection idxname doctype evt)
           (catch Exception e 
