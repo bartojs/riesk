@@ -45,8 +45,10 @@
 (defn index [connection doctype & {:keys [index-name series normalize?] :or {index-name "logstash" series :day normalize? true}}]
   (fn [events]
     (doseq [event events]
-      (let [evt (if normalize? (-> event settimestamp normalize) (-> event settimestamp))
-            idxname (format "%s-%s" index-name (.format (dateformats series) (comm/iso8601->unix (get evt "@timestamp"))))]
+      (let [etime (* (:time event) 1000)
+            evt (if normalize? (-> event settimestamp normalize) (-> event settimestamp))
+            idxname (format "%s-%s" index-name (.format (get dateformats series) etime))]
         (try (doc/create connection idxname doctype evt)
           (catch Exception e 
-            (error "Unable to index:" evt e)))))))
+            (error (format "Unable to index=%s type=%s event=%s exception=%s" idxname doctype (pr-str evt) (pr-str e)))
+            (.printStackTrace e)))))))
