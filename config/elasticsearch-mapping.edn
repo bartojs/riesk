@@ -1,0 +1,56 @@
+{:template "*", 
+ :settings {:number_of_shards 1, 
+            :number_of_replicas 0, 
+            :index {:query {:default_field "description"}, 
+                    :store {:compress {:stored true, :tv true}}}
+ }, 
+ :mappings {
+    :_default_ {
+        :_all {:enabled true}, 
+        :_source {:compress true}, 
+        :dynamic_templates [{
+          :string_template {
+             :match "*", 
+             :mapping {:type "string", :index "not_analyzed"}, 
+             :match_mapping_type "string"}
+        }], 
+        :properties {
+        :metric {:type "double"}, 
+        :description {:type "string", :index "analyzed"}, 
+        :tags {:type "string"}, 
+        :host {:type "string", :index "not_analyzed"}, 
+        :service {:type "string", :index "not_analyzed"}, 
+        :state {:type "string", :index "not_analyzed"}, 
+        "@timestamp" {:type "date", :format "dateOptionalTime", :index "not_analyzed"}, 
+        :ip {:type "string", :index "not_analyzed"}, 
+        :remote-addr {:type "string", :index "not_analyzed"}, 
+        :params {:properties {
+             :_csrf-token {:type "string"}, 
+             :login {:type "string"}, 
+             :password {:type "string"}
+        }}, 
+        :login {:type "string", :index "not_analyzed"}, 
+        :user {:type "string", :index "not_analyzed"}, 
+        :headers {:properties {}}, 
+        :org {:type "string", :index "not_analyzed"}, 
+        :status {:type "string", :index "not_analyzed"}, 
+        :action {:type "string", :index "not_analyzed"}, 
+        :uri {:type "string", :index "not_analyzed"}, 
+        :query-string {:type "string"}, 
+        :request-method {:type "string", :index "not_analyzed"}}
+    }, 
+    :http-request {
+        :_all {:enabled true}, 
+        :response {:type "double"}, 
+        "@message" {:type "string", :index "analyzed"}, 
+        :message {:type "string", :index "analyzed"}
+        :clientip {:type "ip"}, 
+        :verb {:type "string", :index "not_analyzed"}, 
+        :httpversion {:type "string", :index "not_analyzed"}, 
+        :agent {:type "string", :index "analyzed"}, 
+        :auth {:type "string", :index "not_analyzed"}, 
+        :ident {:type "string", :index "not_analyzed"}, 
+        :bytes {:type "double"}, 
+     }
+  }
+}

@@ -1,10 +1,11 @@
 (ns riesk.core
     (:require riesk.kibana 
               [riemann bin time]) 
-		(:import org.elasticsearch.node.NodeBuilder))
+		(:import org.elasticsearch.node.NodeBuilder
+             org.elasticsearch.common.settings.ImmutableSettings))
 
 (defonce es (atom nil))
-(defn start-es [] (reset! es (.node (NodeBuilder/nodeBuilder))))
+(defn start-es [] (reset! es (.node (doto (NodeBuilder/nodeBuilder) (.loadConfigSettings false) (.settings (.loadFromSource (ImmutableSettings/settingsBuilder) (slurp "config/elasticsearch.properties")))))))
 (defn stop-es [] (.close @es))
 
 (defonce ki (atom nil))
